@@ -1,5 +1,10 @@
 # MovieProxy
 
+## About this fork
+I've basically translated it to english, updated some libs and making it work on my setup
+Also planning to do some little tweaks so you don't have to type episode names numbers and can setup a filename format ect
+The rest is unedited 
+
 [MovieProxy](https://www.movieproxy.de) ist eine Webapplikation zum Selbst-Hosting mit der Möglichkeit, Videos gleichzeitig herunterzuladen und anzuschauen.
 
 ![Preview](https://www.movieproxy.de/images/preview.png)
@@ -25,5 +30,5 @@ Das Projekt verwendet Maven als Build-Management-Software. Zum Kompilieren muss 
 - Gson
 - Guava
 - Lombok
-- Log4j
+- ~~Log4j~~ logback
 - Junit
