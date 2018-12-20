@@ -4,14 +4,14 @@ import de.howaner.movieproxy.util.FileInformation;
 
 public interface RequestBytesCallback {
 
-	public void onStart(FileInformation fileInfo);
+    public void onStart(FileInformation fileInfo);
 
-	public void onData(byte[] data);
+    public void onData(byte[] data);
 
-	public void onFinish();
+    public void onFinish();
 
-	public void error(Exception ex);
+    public void error(Exception ex);
 
-	public boolean isWritable();
+    public boolean isWritable();
 
 }

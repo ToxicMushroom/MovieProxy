@@ -8,9 +8,9 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DownloadCallback {
-	private final RequestBytesCallback requestCallback;
-	private final HttpConnection connection;
-	private final long creationTime = System.currentTimeMillis();
-	private long offset;
+    private final RequestBytesCallback requestCallback;
+    private final HttpConnection connection;
+    private final long creationTime = System.currentTimeMillis();
+    private long offset;
 
 }

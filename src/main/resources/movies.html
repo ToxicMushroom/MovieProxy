@@ -1,95 +1,98 @@
 <html>
-	<head>
-		<meta charset="UTF-8" />
+<head>
+    <meta charset="UTF-8"/>
 
-		<link rel="stylesheet" href="assets/css/bootstrap.min.css" />
-		<script src="assets/js/jquery-3.3.1.min.js"></script>
-		<script src="assets/js/gijgo.min.js"></script>
-		<link rel="stylesheet" href="assets/css/gijgo.min.css" />
-		<link rel="stylesheet" href="assets/css/style.css?v=3" />
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css"/>
+    <script src="assets/js/jquery-3.3.1.min.js"></script>
+    <script src="assets/js/gijgo.min.js"></script>
+    <link rel="stylesheet" href="assets/css/gijgo.min.css"/>
+    <link rel="stylesheet" href="assets/css/style.css?v=3"/>
 
-		<title>MovieProxy</title>
-	</head>
-	<body class="bg-light">
-		<div class="container">
-			<div class="py-5 text-center">
-				<img class="d-block mx-auto mb-4" src="assets/img/logo.png" alt="" width="94" height="94" />
-				<h2>Movie Proxy</h2>
-				<p class="lead">Alle heruntergeladenen Videos</p>
-				<a href="/"><button class="btn btn-secondary" type="button">Video herunterladen</button></a>
-			</div>
+    <title>MovieProxy</title>
+</head>
+<body class="bg-light">
+<div class="container">
+    <div class="py-5 text-center">
+        <img class="d-block mx-auto mb-4" src="assets/img/logo.svg" alt="" width="94" height="94"/>
+        <h2>Movie Proxy</h2>
+        <p class="lead">All downloaded videos</p>
+        <a href="/">
+            <button class="btn btn-secondary" type="button">Download a new video</button>
+        </a>
+    </div>
 
-			<div class="row">
-				<div class="col-md-12 order-md-1">
-					<div class="container-fluid root-container">
-						<div id="spinner" style="height: 200px">
-							<img src="assets/img/spinner.svg" width="64" height="64" />
-						</div>
+    <div class="row">
+        <div class="col-md-12 order-md-1">
+            <div class="container-fluid root-container">
+                <div id="spinner" style="height: 200px">
+                    <img src="assets/img/spinner.svg" width="64" height="64"/>
+                </div>
 
-						<div id="tree"></div>
-					</div>
+                <div id="tree"></div>
+            </div>
 
-					<!--<input type="hidden" name="moviepath" id="moviepath" />-->
-					<input type="text" name="moviepath" id="moviepath" style="display: none" /> <!-- Use type="text" instead of hidden that chrome restores the field after page switch -->
+            <!--<input type="hidden" name="moviepath" id="moviepath" />-->
+            <input type="text" name="moviepath" id="moviepath" style="display: none"/>
+            <!-- Use type="text" instead of hidden that chrome restores the field after page switch -->
 
-					<hr class="mb-4" />
-					<button class="btn btn-primary btn-lg btn-block" id="submit_button" type="button">Abspielen</button>
-				</div>
-			</div>
-		</div>
+            <hr class="mb-4"/>
+            <button class="btn btn-primary btn-lg btn-block" id="submit_button" type="button">Play</button>
+        </div>
+    </div>
+</div>
 
-		<script type="text/javascript">
-			$(function() {
-				// http://gijgo.com/tree/demos/bootstrap-4-treeview
-				var tree = $('#tree').tree({
-					uiLibrary: 'bootstrap4',
-					dataSource: 'data/movies.json',
-					primaryKey: 'identifier',
-					selectionType: 'single'
-				});
-				tree.on('select', function(e, node, id) {
-					$("#moviepath").val(id);
-				});
-				tree.on('unselect', function(e, node, id) {
-					$('#moviepath').val('');
-				});
+<script type="text/javascript">
+    $(function () {
+        // http://gijgo.com/tree/demos/bootstrap-4-treeview
+        var tree = $('#tree').tree({
+            uiLibrary: 'bootstrap4',
+            dataSource: 'data/movies.json',
+            primaryKey: 'identifier',
+            selectionType: 'single'
+        });
+        tree.on('select', function (e, node, id) {
+            $("#moviepath").val(id);
+        });
+        tree.on('unselect', function (e, node, id) {
+            $('#moviepath').val('');
+        });
 
-				var cachedPath = $("#moviepath").val();
+        var cachedPath = $("#moviepath").val();
 
-				tree.on('dataBound', function(e, node, id) {
-					$("#spinner").hide();
+        tree.on('dataBound', function (e, node, id) {
+            $("#spinner").hide();
 
-					// Restore last path selection
-					if (cachedPath) {
-						var node = tree.getNodeById(cachedPath);
-						if (node) {
-							tree.select(node);
+            // Restore last path selection
+            if (cachedPath) {
+                var node = tree.getNodeById(cachedPath);
+                if (node) {
+                    tree.select(node);
 
-							// Expand all parent nodes from the selected node
-							var parentNode = $(node[0].parentNode).closest('li');
-							while (parentNode.length !== 0) {
-								var parentTreeNode = tree.getNodeById(parentNode.attr('data-id'));
-								if (parentTreeNode) {
-									tree.expand(parentTreeNode);
-									parentNode = $(parentNode[0].parentNode).closest('li');
-								} else {
-									break;
-								}
-							}
-						}
-					}
-				});
+                    // Expand all parent nodes from the selected node
+                    var parentNode = $(node[0].parentNode).closest('li');
+                    while (parentNode.length !== 0) {
+                        var parentTreeNode = tree.getNodeById(parentNode.attr('data-id'));
+                        if (parentTreeNode) {
+                            tree.expand(parentTreeNode);
+                            parentNode = $(parentNode[0].parentNode).closest('li');
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+        });
 
-				$("#submit_button").click(function() {
-					var moviePath = $("#moviepath").val();
-					if (!moviePath || moviePath == '') {
-						alert("Es muss ein Film ausgewählt werden!");
-						return;
-					}
+        $("#submit_button").click(function () {
+            var moviePath = $("#moviepath").val();
+            if (!moviePath || moviePath == '') {
+                alert("You have to select a movie!");
+                return;
+            }
 
-					window.location = "movie" + moviePath;
-				});
-			});
-		</script>
-	</body>
+            window.location = "movie" + moviePath;
+        });
+    });
+</script>
+</body>
 </html>

@@ -17,44 +17,45 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import lombok.Getter;
 
 public class HttpServer {
-	@Getter private ChannelFuture server;
-	private EventLoopGroup eventLoop;
+    @Getter
+    private ChannelFuture server;
+    private EventLoopGroup eventLoop;
+    private final int port = 8008;
 
-	public void startServer() {
-		if (Epoll.isAvailable())
-			this.eventLoop = new EpollEventLoopGroup(2, new ThreadFactoryBuilder().setNameFormat("Epoll Http Server").setDaemon(true).build());
-		else
-			this.eventLoop = new NioEventLoopGroup(2, new ThreadFactoryBuilder().setNameFormat("Nio Http Server").setDaemon(true).build());
+    public void startServer() {
+        if (Epoll.isAvailable())
+            this.eventLoop = new EpollEventLoopGroup(2, new ThreadFactoryBuilder().setNameFormat("Epoll Http Server").setDaemon(true).build());
+        else
+            this.eventLoop = new NioEventLoopGroup(2, new ThreadFactoryBuilder().setNameFormat("Nio Http Server").setDaemon(true).build());
 
-		ProxyApplication.getInstance().getLogger().info("Start http server at 0.0.0.0:8080 ...");
-		try {
-			ServerBootstrap bootstrap = new ServerBootstrap()
-					.group(this.eventLoop)
-					.channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
-					.childHandler(new ChannelInitializer<SocketChannel>() {
-						@Override
-						protected void initChannel(SocketChannel channel) throws Exception {
-							ChannelPipeline pipe = channel.pipeline();
-							pipe.addLast("codec", new HttpServerCodec());
-							pipe.addLast("handler", new HttpServerConnection());
-						}
-					});
+        ProxyApplication.getInstance().getLogger().info("Start http server at 0.0.0.0:" + port + " ...");
+        try {
+            ServerBootstrap bootstrap = new ServerBootstrap()
+                    .group(this.eventLoop)
+                    .channel(Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel channel) {
+                            ChannelPipeline pipe = channel.pipeline();
+                            pipe.addLast("codec", new HttpServerCodec());
+                            pipe.addLast("handler", new HttpServerConnection());
+                        }
+                    });
 
-			this.server = bootstrap.bind(8080).syncUninterruptibly();
-		} catch (Exception ex) {
-			ProxyApplication.getInstance().getLogger().fatal("Can't start http server", ex);
-		}
-	}
+            this.server = bootstrap.bind(port).syncUninterruptibly();
+        } catch (Exception ex) {
+            ProxyApplication.getInstance().getLogger().fatal("Can't start http server", ex);
+        }
+    }
 
-	public void stopServer() {
-		if (this.server == null)
-			return;
-
-		try {
-			ProxyApplication.getInstance().getLogger().info("Stop http server ...");
-			this.server.channel().close().syncUninterruptibly();
-			this.eventLoop.shutdown();
-		} catch (Exception ex) {}
-	}
-
+    public void stopServer() {
+        if (this.server == null)
+            return;
+        try {
+            ProxyApplication.getInstance().getLogger().info("Stop http server ...");
+            this.server.channel().close().syncUninterruptibly();
+            this.eventLoop.shutdown();
+        } catch (Exception ignored) {
+        }
+    }
 }

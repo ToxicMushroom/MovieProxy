@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class FileInformation {
-	private final String contentType;
-	private final long contentLength;
+    private final String contentType;
+    private final long contentLength;
 
 }
