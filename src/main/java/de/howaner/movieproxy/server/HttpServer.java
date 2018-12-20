@@ -44,7 +44,7 @@ public class HttpServer {
 
             this.server = bootstrap.bind(port).syncUninterruptibly();
         } catch (Exception ex) {
-            ProxyApplication.getInstance().getLogger().fatal("Can't start http server", ex);
+            ProxyApplication.getInstance().getLogger().error("Can't start http server", ex);
         }
     }
 

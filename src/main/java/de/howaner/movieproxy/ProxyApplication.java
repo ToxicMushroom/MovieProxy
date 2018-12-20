@@ -8,8 +8,8 @@ import de.howaner.movieproxy.server.HttpServer;
 import java.io.File;
 
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ProxyApplication {
     @Getter
@@ -20,12 +20,11 @@ public class ProxyApplication {
     @Getter
     private final FileContentReceiverManager fileContentReceiverManager = new FileContentReceiverManager();
     @Getter
-    private final Logger logger;
+    private final Logger logger = LoggerFactory.getLogger(ProxyApplication.class.getName());
     @Getter
     private final Gson gson;
 
     public ProxyApplication() {
-        this.logger = LogManager.getLogger();
         this.gson = new Gson();
     }
 
