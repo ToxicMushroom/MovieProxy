@@ -1,6 +1,7 @@
 package de.howaner.movieproxy;
 
 import com.google.common.base.Charsets;
+import com.google.common.io.CharSource;
 import com.google.common.net.HttpHeaders;
 import de.howaner.movieproxy.content.ContentReceiver;
 import de.howaner.movieproxy.content.FileContentReceiver;
@@ -11,11 +12,7 @@ import de.howaner.movieproxy.dataresponse.MoviesResponse;
 import de.howaner.movieproxy.download.Download;
 import de.howaner.movieproxy.exception.InvalidRequestException;
 import de.howaner.movieproxy.server.HttpServerConnection;
-import de.howaner.movieproxy.util.CloseReason;
-import de.howaner.movieproxy.util.FileInformation;
-import de.howaner.movieproxy.util.FilePath;
-import de.howaner.movieproxy.util.HttpFile;
-import de.howaner.movieproxy.util.HttpUtils;
+import de.howaner.movieproxy.util.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
@@ -28,14 +25,15 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.LastHttpContent;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -186,6 +184,16 @@ public class HttpConnection implements RequestBytesCallback {
             return;
         }
 
+
+        if (filePath.equals("/index.html")) {
+            String content = streamToString(stream)
+                    .replaceAll("%last_series%", LastDownloaded.getLastDownloaded().getSeries())
+                    .replaceAll("%last_season%", LastDownloaded.getLastDownloaded().getSeason())
+                    .replaceAll("%last_episode%", LastDownloaded.getLastDownloaded().getEpisode());
+            stream = new ByteArrayInputStream(content.getBytes());
+        }
+
+
         ByteBuf buffer = this.connection.getChannel().alloc().buffer(Constants.HTTP_INITIAL_RESOURCES_BUFFER_SIZE);
         String contentType = HttpUtils.getContentType(filePath);
 
@@ -196,13 +204,16 @@ public class HttpConnection implements RequestBytesCallback {
         }
         stream.close();
 
+        System.out.println();
+
         HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         if (contentType != null)
             response.headers().set(HttpHeaders.CONTENT_TYPE, contentType);
         response.headers().set(HttpHeaders.CONNECTION, "close");
         response.headers().set(HttpHeaders.SERVER, "MovieProxy");
         response.headers().set(HttpHeaders.CONTENT_LENGTH, buffer.readableBytes());
-        response.headers().set(HttpHeaders.CACHE_CONTROL, "public, max-age=86400");
+        response.headers().set(HttpHeaders.CACHE_CONTROL, "no-cache, no-store, must-revalidate");
+        response.headers().set(HttpHeaders.EXPIRES, "0");
 
         if (contentType != null && contentType.equals("text/html"))
             response.headers().set(HttpHeaders.CONTENT_ENCODING, "UTF-8");
@@ -212,6 +223,16 @@ public class HttpConnection implements RequestBytesCallback {
         HttpConnection.this.getConnection().getChannel().write(content).addListener(ChannelFutureListener.CLOSE);
         HttpConnection.this.getConnection().getChannel().flush();
         this.close(CloseReason.Finished, false);
+    }
+
+    private String streamToString(InputStream stream) throws IOException {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int length;
+        while ((length = stream.read(buffer)) != -1) {
+            result.write(buffer, 0, length);
+        }
+        return result.toString(StandardCharsets.UTF_8.name());
     }
 
     private void handleDataRequest(HttpRequest req) {
@@ -281,8 +302,9 @@ public class HttpConnection implements RequestBytesCallback {
             String key = part.substring(0, seperator);
             String value = part.substring(seperator + 1);
 
-            data.put(key, URLDecoder.decode(value, "UTF-8"));
+            data.put(key, URLDecoder.decode(value, StandardCharsets.UTF_8));
         }
+
 
         String filename = data.get("filename");
         String url = data.get("url");
@@ -296,6 +318,16 @@ public class HttpConnection implements RequestBytesCallback {
         if (httpFile == null) {
             this.closeWithErrorResponse(CloseReason.InvalidRequest, "Streaming url is invalid.");
             return;
+        }
+
+        Pattern pattern = Pattern.compile("(.*) - S.(\\d{1,2}) EP.(\\d{1,5}).mp4");
+        Matcher matcher = pattern.matcher(filename);
+        if (matcher.find()) {
+            LastDownloaded lastDownloaded = LastDownloaded.getLastDownloaded();
+            lastDownloaded.setSeries(matcher.group(1));
+            lastDownloaded.setSeason(matcher.group(2));
+            lastDownloaded.setEpisode(matcher.group(3));
+            Config.getConfigInstance().saveCacheToConfig();
         }
 
         String identifier = UUID.randomUUID().toString().substring(0, 8);

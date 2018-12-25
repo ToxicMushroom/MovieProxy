@@ -44,7 +44,7 @@ public class MoviesResponse {
                 list.add(entry);
         }
 
-        return list.stream().sorted(Comparator.comparing(s -> s.getText())).collect(Collectors.toList());
+        return list.stream().sorted(Comparator.comparing(MovieEntry::getText)).collect(Collectors.toList());
     }
 
     @Data

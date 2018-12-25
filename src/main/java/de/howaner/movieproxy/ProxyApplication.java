@@ -7,6 +7,8 @@ import de.howaner.movieproxy.server.HttpServer;
 
 import java.io.File;
 
+import de.howaner.movieproxy.util.Config;
+import de.howaner.movieproxy.util.LastDownloaded;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +44,12 @@ public class ProxyApplication {
     }
 
     private void start() {
-        this.logger.info("Hello world!");
+        Config.getConfigInstance().configToCache();
+        logger.info("-------------------------STARTING-------------------------");
+        logger.info("Series: " + LastDownloaded.getLastDownloaded().getSeries());
+        logger.info("Season: " + LastDownloaded.getLastDownloaded().getSeason());
+        logger.info("Episode: " + LastDownloaded.getLastDownloaded().getEpisode());
+
 
         if (!this.getStoragePath().isDirectory())
             this.getStoragePath().mkdir();
@@ -54,8 +61,7 @@ public class ProxyApplication {
                 if (file.isFile())
                     file.delete();
             }
-        } catch (Exception ignored) {
-        }
+        } catch (Exception ignored) {}
 
         HttpServer server = new HttpServer();
         server.startServer();
@@ -68,7 +74,5 @@ public class ProxyApplication {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        // TODO
     }
-
 }

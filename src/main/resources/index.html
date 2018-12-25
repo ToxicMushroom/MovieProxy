@@ -87,14 +87,14 @@
         $.ajax({
             url: 'data/downloads.json'
         }).done(function (data) {
-            var downloadsRegion = $("#downloads");
+            const downloadsRegion = $("#downloads");
             downloadsRegion.empty();
 
             data.forEach(function (elem) {
-                var downloadedMbytes = (elem.downloadedBytes / 1024 / 1024).toFixed(1);
-                var maxMbytes = (elem.maxBytes / 1024 / 1024).toFixed(1);
+                const downloadedMbytes = (elem.downloadedBytes / 1024 / 1024).toFixed(1);
+                const maxMbytes = (elem.maxBytes / 1024 / 1024).toFixed(1);
 
-                var region = $('<li class="list-group-item">');
+                const region = $('<li class="list-group-item">');
                 region.append('<span class="float-right"><a onclick="cancelDownload(\'' + elem.saveFolder + '/' + elem.saveFileName + '\', \'' + elem.cancelUrl + '\')" class="cancel-download">X</a></span>');
                 region.append('<h6 class="my-0"><a href="' + elem.streamingUrl + '">' + elem.saveFileName + '</a></h6>');
                 region.append('<small class="text-muted download-folder">' + elem.saveFolder + '</small>');
@@ -110,15 +110,26 @@
     }
 
     $(function () {
-        console.log($('#savepath').val());
+        // console.log($('#savepath').val());
+        const series = "%last_series%";
+        const season = "%last_season%";
+        const episode = "%last_episode%";
+
+        if (series !== "" && season !== "" && episode !== "") {
+            document.getElementById("filename").value = series + " - S." + season + " EP." + episode + ".mp4";
+        }
 
         // http://gijgo.com/tree/demos/bootstrap-4-treeview
-        var tree = $('#tree').tree({
+        const tree = $('#tree').tree({
             uiLibrary: 'bootstrap4',
             dataSource: 'data/folders.json',
             primaryKey: 'identifier',
             selectionType: 'single'
         });
+
+
+
+
         tree.on('select', function (e, node, id) {
             $("#savepath").val(id);
         });
@@ -126,21 +137,32 @@
             $('#savepath').val('');
         });
 
-        var cachedPath = $("#savepath").val();
+        const cachedPath = $("#savepath").val();
+
 
         tree.on('dataBound', function (e, node, id) {
             $("#spinner").hide();
 
+            //Bary the chopper chopping on some trees
+            const listItems = document.getElementById("tree").firstElementChild.children;
+            for (let i = 0; i<listItems.length; i++) {
+                const expander = listItems.item(i).firstChild.childNodes.item(1);
+                const text = listItems.item(i).firstChild.childNodes.item(2);
+                console.log(expander);
+                console.log(text);
+                text.parentNode.insertBefore(text, expander);
+            }
+
             // Restore last path selection
             if (cachedPath) {
-                var node = tree.getNodeById(cachedPath);
+                const node = tree.getNodeById(cachedPath);
                 if (node) {
                     tree.select(node);
 
                     // Expand all parent nodes from the selected node
-                    var parentNode = $(node[0].parentNode).closest('li');
+                    let parentNode = $(node[0].parentNode).closest('li');
                     while (parentNode.length !== 0) {
-                        var parentTreeNode = tree.getNodeById(parentNode.attr('data-id'));
+                        const parentTreeNode = tree.getNodeById(parentNode.attr('data-id'));
                         if (parentTreeNode) {
                             tree.expand(parentTreeNode);
                             parentNode = $(parentNode[0].parentNode).closest('li');
@@ -152,8 +174,10 @@
             }
         });
 
+
+
         updateDownloads();
-        setInterval(updateDownloads, 5000);
+        setInterval(updateDownloads, 2000);
     });
 
     function cancelDownload(fullPath, cancelUrl) {
