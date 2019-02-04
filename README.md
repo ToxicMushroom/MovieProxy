@@ -1,8 +1,13 @@
 # MovieProxy
 
-## About this fork
-I've basically translated it to english, updated some libs and making it work on my setup
-Also planning to do some little tweaks so you don't have to type episode names numbers and can setup a filename format ect
+## Done
+I've basically translated it to english, updated/changed some dependencies to make it work on my setup.
+I also did some little tweaks (it now saves the last downloaded video name) and other minor design changes
+
+## Todo
+I'm planning to add youtube support and folder creation in the future
+Video watcher is bugged (since the beginning) so I use [this](https://www.directorylister.com/) as a solution.
+
 The rest is unedited 
 
 [MovieProxy](https://www.movieproxy.de) ist eine Webapplikation zum Selbst-Hosting mit der Möglichkeit, Videos gleichzeitig herunterzuladen und anzuschauen.
