@@ -7,9 +7,7 @@ public class LastDownloaded {
     private String season = "";
     private String episode = "";
 
-    public LastDownloaded() {
-
-    }
+    private LastDownloaded() {}
 
     public void setSeason(String season) {
         this.season = season;
