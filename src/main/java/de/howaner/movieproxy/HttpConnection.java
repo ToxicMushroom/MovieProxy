@@ -320,7 +320,7 @@ public class HttpConnection implements RequestBytesCallback {
             return;
         }
 
-        Pattern pattern = Pattern.compile("(.*) - S.(\\d{1,2}) EP.(\\d{1,5}).mp4");
+        Pattern pattern = Pattern.compile("(.*) - s(\\d+)e(\\d+)\\.mp4");
         Matcher matcher = pattern.matcher(filename);
         if (matcher.find()) {
             LastDownloaded lastDownloaded = LastDownloaded.getLastDownloaded();
