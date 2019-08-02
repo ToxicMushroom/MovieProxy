@@ -144,14 +144,14 @@
             $("#spinner").hide();
 
             //Bary the chopper chopping on some trees
-            const listItems = document.getElementById("tree").firstElementChild.children;
-            for (let i = 0; i<listItems.length; i++) {
-                const expander = listItems.item(i).firstChild.childNodes.item(1);
-                const text = listItems.item(i).firstChild.childNodes.item(2);
-                console.log(expander);
-                console.log(text);
-                text.parentNode.insertBefore(text, expander);
-            }
+            // const listItems = document.getElementById("tree").firstElementChild.children;
+            // for (let i = 0; i<listItems.length; i++) {
+            //     const expander = listItems.item(i).firstChild.childNodes.item(1);
+            //     const text = listItems.item(i).firstChild.childNodes.item(2);
+            //     console.log(expander);
+            //     console.log(text);
+            //     text.parentNode.insertBefore(text, expander);
+            // }
 
             // Restore last path selection
             if (cachedPath) {
