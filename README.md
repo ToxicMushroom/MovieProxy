@@ -11,9 +11,10 @@ It will save the last downloaded title if the title matches the following regex
 some examples
 
 - Pokemon - s1e001.mp4
-- South Park - s02e03.mkv
+- South Park - s02e03.mp4
 - ~~ijfsdqoifhjqds.mp4~~
 - ~~Pokemon s1 e001.mp4~~
+- ~~South Park - s02e03.mkv~~
 
 ## Preview
 ![preview](https://i.melijn.me/16d36d531f5)
