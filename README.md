@@ -1,22 +1,31 @@
 # MovieProxy
 
-## Done
+## Extras
 I've basically translated it to english, updated/changed some dependencies to make it work on my setup.
 I also did some little tweaks (it now saves the last downloaded video name) and other minor design changes
 
-## Todo
-I'm planning to add youtube support and folder creation in the future
-Video watcher is bugged (since the beginning) so I use [this](https://www.directorylister.com/) as a solution.
+It will save the last downloaded title if the title matches the following regex
+```regex
+(.*) - s(\d+)e(\d+)\..*
+```
+some examples
 
-The rest is unedited 
+- Pokemon - s1e001.mp4
+- South Park - s02e03.mkv
+- ~~ijfsdqoifhjqds.mp4~~
+- ~~Pokemon s1 e001.mp4~~
 
-[MovieProxy](https://www.movieproxy.de) ist eine Webapplikation zum Selbst-Hosting mit der Möglichkeit, Videos gleichzeitig herunterzuladen und anzuschauen.
+## Preview
+![preview](https://i.melijn.me/16d36d531f5)
 
-![Preview](https://www.movieproxy.de/images/preview.png)
+## Installation
 
-## Funktionsweise
+1. Download the jar file
+2. Run the jar file "java -jar MovieProxy.jar"
+3. Server will start on 0.0.0.0:8008
+4. Access the server with localhost:8008
 
-Sobald die Software gestartet wird, wird ein HTTP Server auf Port 8080 gestartet, über den das Webinterface erreicht werden kann. Mehr unter [Installation](https://www.movieproxy.de/installation/).
+Alternatively, setup a dns and a nginx proxy pass so it's easier, you can use cloudflare for free ssl and hide your server ip. Contact me on discord for more info
 
 ## Download
 
